@@ -1,6 +1,6 @@
 # Running Consul on Kubernetes
 
-These are my rough notes on how to run a 3 node consul cluster on Kubernetes. You MUST understand how consul works, this is just my notes.
+These are my rough notes on how to run a 3 node consul cluster on Kubernetes on AWS. You MUST understand how consul works, this is just my notes.
 
 ## Overview
 
@@ -11,9 +11,11 @@ These are my rough notes on how to run a 3 node consul cluster on Kubernetes. Yo
 ## What makes this work
 
 - 1 deployment per consul member
+- 1 persistentVolumeClaim per consul member
 - 1 service per consul member
 - 1 service to expose the consul UI
 - Use `spec.securityContext.fsGroup` to ensure the volume is writable by the consul process which is running as non-root.
+- Requires at least a 1.4 cluster for kubernetes.io/aws-ebs volume provisioner
 
 ```
 spec:
@@ -26,7 +28,7 @@ spec:
 Clone this repo:
 
 ```
-git clone https://github.com/kelseyhightower/consul-on-kubernetes.git
+git clone https://github.com/pabens/consul-on-kubernetes.git
 ```
 
 ```
@@ -35,13 +37,31 @@ cd consul-on-kubernetes
 
 ### Create Volumes
 
+Create AWS EBS Storage Class to automatically provision volumes.
+
 ```
-gcloud compute disks create consul-1 consul-2 consul-3
+kubectl create -f storageclasses/
+```
+
+```
+storageclass "ebs-standard" created
+```
+
+Create Persistent Volume Claims, one for each consul member.
+
+```
+kubectl create -f volumeclaims/
+```
+
+```
+persistentvolumeclaim "consul-1" created
+persistentvolumeclaim "consul-2" created
+persistentvolumeclaim "consul-3" created
 ```
 
 ### Consul Services
 
-Create one service per consul member with a fixed cluster IP. 
+Create one service per consul member with a fixed cluster IP.
 
 ```
 kubectl create -f services/

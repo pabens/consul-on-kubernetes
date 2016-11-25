@@ -47,6 +47,5 @@ spec:
               name: server
       volumes:
         - name: data
-          gcePersistentDisk:
-            pdName: consul-1
-            fsType: ext4
+          persistentVolumeClaim:
+            claimName: consul-1
