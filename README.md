@@ -14,8 +14,8 @@ These are my rough notes on how to run a 3 node consul cluster on Kubernetes on 
 - 1 persistentVolumeClaim per consul member
 - 1 service per consul member
 - 1 service to expose the consul UI
-- Use `spec.securityContext.fsGroup` to ensure the volume is writable by the consul process which is running as non-root.
 - Requires at least a 1.4 cluster for kubernetes.io/aws-ebs volume provisioner
+- Use `spec.securityContext.fsGroup` to ensure the volume is writable by the consul process which is running as non-root.
 
 ```
 spec:
